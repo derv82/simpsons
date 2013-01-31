@@ -1,0 +1,51 @@
+body {
+	background-color: #222;
+	color: #dd0;
+	font-weight: bold;
+	font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+	padding: 20px;
+	text-align: center;
+}
+
+table {
+	border: none;
+	width: 100%;
+}
+
+td {
+	padding: 5px;
+	border: solid 2px #dd0;
+	border-radius: 5px;
+	max-width: 50px;
+}
+
+td.label {
+}
+td.label:hover {
+	cursor: default;
+}
+td.index {
+	max-width: 10px;
+}
+td.index:hover {
+	background-color: #aa3;
+	cursor: pointer;
+}
+td.active {
+	max-width: 10px;
+	background-color: #dd0;
+	color: #222;
+	cursor: default;
+}
+
+tr.episode {
+	visibility: hidden;
+}
+
+#info_top {
+}
+#media {
+	min-height: 200px;
+}
+#info_bottom {
+}
