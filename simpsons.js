@@ -89,7 +89,20 @@ function handleEpisodeInfo(req) {
 		console.log("Unable to parse response:\n" + req.responseText);
 		return;
 	}
+	var top = '';
+	top += 'Season ' + json['season'];
+	top += ' Episode ' + json['episode'];
+	top += ' - ' + json['title'];
+	gebi("info_top").innerHTML = top;
 	
+	var video = gebi("video");
+	video.setAttribute('poster', json['thumbnail']);
+	video.setAttribute('src', json['videopath']);
+	video.load();
+	video.play()
+	var bottom = '';
+	bottom += '<a href="videos/s' + season + 'e' + episode + '.mp4">download</a>';
+	gebi("info_bottom").innerHTML = bottom;
 }
 
 /* Create new XML/AJAX request object */

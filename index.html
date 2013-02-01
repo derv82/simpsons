@@ -22,9 +22,19 @@
 			</tr>
 		</table>
 
-		<div id="info_top"></div>
-		<div id="media"></div>
-		<div id="info_bottom"></div>
+		<div id="info_top">Season 1 Episode 1 - The Simpsons Roasting on an Open Fire</div>
+		<!-- "Video For Everybody" http://camendesign.com/code/video_for_everybody -->
+		<video id="video" controls="controls" poster="pics/s1e1.jpg" width="640" height="360">
+			<source src="videos/s01e01.mp4" type="video/mp4" />
+			<object type="application/x-shockwave-flash" data="player.swf" width="640" height="360">
+				<param name="movie" value="player.swf" />
+				<param name="allowFullScreen" value="true" />
+				<param name="wmode" value="transparent" />
+				<param name="flashVars" value="autostart=true&amp;controlbar=over&amp;image=pics%2Fs1e1.jpg&amp;file=videos%2Fs01e01.mp4" />
+				<img alt="The Simpsons" src="pics/s1e1.jpg" width="640" height="360" title="No video playback capabilities, please download the video below" />
+			</object>
+		</video>
+		<div id="info_bottom"><a href="videos/s01e01.mp4">download</a></div>
 		
 		<div class="footer">
 			2013 no (c)opyright
