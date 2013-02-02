@@ -95,13 +95,16 @@ function handleEpisodeInfo(req) {
 	top += ' - ' + json['title'];
 	gebi("info_top").innerHTML = top;
 	
+	var videojs = _V_("video");
 	var video = gebi("video");
+	videojs.pause();
 	video.setAttribute('poster', json['thumbnail']);
-	video.setAttribute('src', json['videopath']);
-	video.load();
-	video.play()
+	video.childNodes[1].setAttribute('src', json['videopath']);
+	videojs.load();
+	videojs.play();
+
 	var bottom = '';
-	bottom += '<a href="videos/s' + season + 'e' + episode + '.mp4">download</a>';
+	bottom += '<a href="' + json['videopath'] + '">download</a>';
 	gebi("info_bottom").innerHTML = bottom;
 }
 
