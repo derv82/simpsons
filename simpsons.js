@@ -100,18 +100,15 @@ function handleEpisodeInfo(req) {
 }
 
 function loadMovie(title, videopath, thumbnail, autoplay) {
-	if (gebi("video") !== null) {
-		_V_("video").pause();
-	}
+	try {
+		_V_("video").destroy();
+	} catch (error) { }
 	var output = '';
 	output += '<video id="video" ';
 	output += '       class="video-js vjs-default-skin" ';
 	output += '       controls preload="auto" ';
 	output += '       width="640" ';
 	output += '       height="480" ';
-	if (autoplay === true) {
-		output+='       autoplay="true" ';
-	}
 	output += '       poster="' + thumbnail + '"';
 	output += '       data-setup="{}">';
 	output += '  <source src="' + videopath + '" type="video/mp4">';
@@ -120,9 +117,11 @@ function loadMovie(title, videopath, thumbnail, autoplay) {
 	gebi("video_container").innerHTML = output;
 	gebi("info_bottom").innerHTML = '<a href="' + videopath + '">download</a>';
 	
-	videojs = _V_("video");
-	videojs.load();
-	videojs.play();
+	if (autoplay === true) {
+		var videojs = _V_("video");
+		videojs.load();
+		videojs.play();
+	}
 }
 
 /* Create new XML/AJAX request object */
