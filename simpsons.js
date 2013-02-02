@@ -6,6 +6,7 @@ var EPISODE_COUNTS = new Array();
 function init() {
 	// Request seasons
 	sendRequest('simpsons.cgi?method=count', handleEpisodeCounts);
+	loadMovie('S1E1 Xmas special', 'videos/s01e01.mp4', 'pics/s1e1.jpg', false);
 }
 
 function handleEpisodeCounts(req) {
@@ -93,19 +94,35 @@ function handleEpisodeInfo(req) {
 	top += 'Season ' + json['season'];
 	top += ' Episode ' + json['episode'];
 	top += ' - ' + json['title'];
-	gebi("info_top").innerHTML = top;
-	
-	var videojs = _V_("video");
-	var video = gebi("video");
-	videojs.pause();
-	video.setAttribute('poster', json['thumbnail']);
-	video.childNodes[1].setAttribute('src', json['videopath']);
-	videojs.load();
-	videojs.play();
-
 	var bottom = '';
 	bottom += '<a href="' + json['videopath'] + '">download</a>';
-	gebi("info_bottom").innerHTML = bottom;
+	loadMovie(top, json['videopath'], json['thumbnail'], true);
+}
+
+function loadMovie(title, videopath, thumbnail, autoplay) {
+	if (gebi("video") !== null) {
+		_V_("video").pause();
+	}
+	var output = '';
+	output += '<video id="video" ';
+	output += '       class="video-js vjs-default-skin" ';
+	output += '       controls preload="auto" ';
+	output += '       width="640" ';
+	output += '       height="480" ';
+	if (autoplay === true) {
+		output+='       autoplay="true" ';
+	}
+	output += '       poster="' + thumbnail + '"';
+	output += '       data-setup="{}">';
+	output += '  <source src="' + videopath + '" type="video/mp4">';
+	output += '</video>';
+	gebi("info_top").innerHTML = title;
+	gebi("video_container").innerHTML = output;
+	gebi("info_bottom").innerHTML = '<a href="' + videopath + '">download</a>';
+	
+	videojs = _V_("video");
+	videojs.load();
+	videojs.play();
 }
 
 /* Create new XML/AJAX request object */

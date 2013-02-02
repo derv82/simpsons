@@ -9,7 +9,6 @@
 					href="style.css"
 					media="screen" />
 		<link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">
-		<script src="http://vjs.zencdn.net/c/video.js"></script>
 	</head>
 
 	<body>
@@ -25,15 +24,7 @@
 		</table>
 
 		<div id="info_top">Season 1 Episode 1 - The Simpsons Roasting on an Open Fire</div>
-		<video id="video" 
-		       class="video-js vjs-default-skin" 
-		       controls preload="auto" 
-					 width="640" 
-					 height="480" 
-					 poster="pics/s1e1.jpg"
-		       data-setup="{}">
-			<source src="videos/s01e01.mp4" type='video/mp4'>
-		</video>
+		<div id="video_container"></div>
 		<div id="info_bottom"><a href="videos/s01e01.mp4">download</a></div>
 		
 		<div class="footer">
@@ -41,6 +32,7 @@
 		</div>
 
 		<script type="text/javascript" src="simpsons.js"></script>
+		<script src="http://vjs.zencdn.net/c/video.js"></script>
 	</body>
 </html>
 
