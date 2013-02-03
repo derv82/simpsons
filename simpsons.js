@@ -168,34 +168,28 @@ function getContainerOutput(json) {
 function getInfoOutput(json) {
 	var info = '';
 	info += '<table>';
-	info += '<tr><td class="info_title">Title</td><td class="info_content">' + json['title']      + '</td></tr>';
+	info += '<tr><td class="info_title">Title</td><td class="info_content">' + json['title'] + '</td></tr>';
 	// FIgure out airdate based on UTC timestamp
 	var date = new Date(0);
 	date.setUTCSeconds(parseInt(json['airdate']));
 	json['airdate'] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()] + ' ' + date.getDate() + ' ' + date.getFullYear(); 
-	info += infoRow('Airdate', json['airdate']); 
-	
+	info += infoRow('Airdate',    json['airdate']); 
 	info += infoRow('Download', '<a href="' + json['videopath'] + '">' + json['videopath'] + '</a> (' + intToSize(json['videosize']) + ')'); 
-	info += infoRow('Synopsis', json['synopsis']); 
-	if (json['blackboard'] != null && json['blackboard'] !== '') {
-		info += infoRow('Blackboard', json['blackboard']); 
-	}
-	if (json['couch_gag'] != null && json['couch_gag'] !== '') {
-		info += infoRow('Couch gag', json['couch_gag']); 
-	}
+	info += infoRow('Synopsis',   json['synopsis']); 
+	info += infoRow('Blackboard', json['blackboard']); 
+	info += infoRow('Couch gag',  json['couch_gag']); 
 	// Manually add table because we want to set plot BUT NOT DISPLAY IT
 	info += '<tr id="plot" style="display: none;"><td class="info_title">Plot</td><td class="info_content">' + json['plot'] + '</td></tr>';
-	if (json['notes'] != null && json['notes'] !== '') {
-		info += infoRow('Notes', json['notes']); 
-	}
-	info += infoRow('Director', json['director']); 
-	info += infoRow('Writer', json['writer']); 
+	info += infoRow('Notes',      json['notes']); 
+	info += infoRow('Director',   json['director']); 
+	info += infoRow('Writer',     json['writer']); 
 	info += '</table>';
 	return info;
 }
 
 /* Helper function. Adds row to table with relevant label/content. */
 function infoRow(label, content) {
+	if (content == null || content === '') return '';
 	return '<tr><td class="info_title">' + label + '</td><td class="info_content">' + content + '</td></tr>';
 }
 
