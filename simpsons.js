@@ -3,12 +3,11 @@ function gebi(id) { return document.getElementById(id); }
 
 /* Initialization. Runs when window first loads. */
 function init() {
-	// Request # of seasons
+	// Request # of seasons from server
 	sendRequest('simpsons.cgi?method=count_seasons', handleSeasonCount);
-	// Cached JSON for first season
-	var json = {"plot": "After attending the Springfield Elementary School Christmas pageant, the Simpsons prepare for the holiday season. Marge asks Bart and Lisa for their letters to Santa. Lisa requests a pony, and Bart requests a tattoo. The next day, Marge takes the kids to the mall to go Christmas shopping at a department store in the mall. Bart slips away to the tattoo parlor and attempts to get a tattoo that reads \"Mother\". With the tattoo partially completed, Marge bursts in and drags Bart two doors down to the dermatologist to have it removed. Counting on Homer's Christmas bonus, Marge spends all of the family's holiday money on the procedure. Meanwhile, at the power plant Homer's boss, Mr. Burns, announces that there will be no Christmas bonus this year.\n\nHomer, discovering there is no money for Christmas presents and not wanting to worry the family, takes a job as a shopping mall Santa Claus at the suggestion of his friend Barney Gumble. On Christmas Eve, Bart goes to the mall and harasses Santa, exposing Homer's secret. After Homer is paid less than expected for his Department Store Santa work, he and Bart receive a hot dog racing tip from Barney.\n\nAt Springfield Downs, Homer, inspired by an announcement about a last-minute entry named Santa's Little Helper, bet all his money on the 99-1 long shot. The greyhound finishes last. As Homer and Bart leave the track, they watch the dog's owner angrily disowning him for losing the race. Bart pleads with Homer to keep the dog as a pet, and he reluctantly agrees. When Bart and Homer return home, Homer finally comes clean to the family that he didn't get his bonus, but all is forgiven with the arrival of Santa's Little Helper who is assumed to be a Christmas present for the whole family.", "code": "7G08", "episode": 1, "videopath": "videos\/s01e01.mp4", "episodenum": 1, "season": 1, "notes": "Patty, Selma, Ned and Todd Flanders, Mr. Burns, Smithers, and Grampa Simpson are introduced (although Smithers has a voice-only part). <br>This episode is on the <i>Christmas with the Simpsons<\/i> DVD (as well as on the Season 1 DVD set).", "airdate": "629884800", "videosize": 100908321, "director": "David Silverman", "couch_gag": "", "synopsis": "It's a not-so-merry Christmas for the Simpsons, when Mr. Burns decides to cut the Christmas bonuses and Marge had to spend the Christmas savings to erase a tattoo Bart thought would make a great Christmas present. In order to hide the fact that he did not get the bonus, Homer takes a second job as a store Santa.", "blackboard": "", "title": "Simpsons Roasting on an Open Fire (The Simpsons Christmas Special)", "writer": "Mimi Pond", "thumbnail": "pics\/s1e1.jpg"};
-	loadMovie(json, false);
-	// TODO Send a request for this instead?
+	// Request Season 1, Episode 1 from server
+	// Note that this will auto-play the episode!
+	showEpisode(1, 1);
 }
 
 /* Handles server response containing # of seasons. */
@@ -20,6 +19,7 @@ function handleSeasonCount(req) {
 		console.log("Unable to parse response:\n" + req.responseText);
 		return;
 	}
+	// Build row of 'Seasons'
 	var season_row = gebi('season_row');
 	for (var season = 1; season <= json['count']; season++) {
 		var td = document.createElement('td');
@@ -30,7 +30,9 @@ function handleSeasonCount(req) {
 		td.onclick = (function() { 
 			var current_season = season;
 			return function() { 
-				sendRequest('simpsons.cgi?method=season_info&season=' + current_season, handleSeasonInfo);
+				gebi("episode_row").style.visibility = 'hidden';
+				var query = 'simpsons.cgi?method=season_info&season=' + current_season
+				sendRequest(query, handleSeasonInfo);
 			};
 		})();
 		season_row.appendChild(td);
@@ -56,6 +58,7 @@ function handleSeasonInfo(req) {
 	while (episode_row.lastChild.className !== 'label') {
 		episode_row.removeChild(episode_row.lastChild);
 	}
+	// Build row of "Episodes"
 	var episodes = json['episodes'];
 	for (var i in episodes) {
 		// Add node for every episode
@@ -77,6 +80,7 @@ function handleSeasonInfo(req) {
 	episode_row.style['visibility'] = 'visible';
 }
 
+/* Helper method. Marks existing Season or Episode nodes as 'inactive'. */
 function setInactive(idPrefix) {
 	var i = 1;
 	while (true) {
@@ -89,39 +93,18 @@ function setInactive(idPrefix) {
 	}
 }
 
-
-function showSeason(season) {
-	var episode_row = gebi('episode_row');
-	setInactive('season');
-	gebi('season' + season).className = 'active';
-	// Remove existing episode nodes
-	while (episode_row.lastChild.className !== 'label') {
-		episode_row.removeChild(episode_row.lastChild);
-	}
-	// Add node for every episode
-	for (i = 1; i <= episode_count; i++) {
-		var td = document.createElement('td');
-		td.className = 'index';
-		td.innerHTML = (i);
-		td.id = "s" + season + "e" + i;
-		td.onclick = (function() { 
-			var current_season = season, current_episode = i;
-			return function() {
-				showEpisode(current_season, current_episode);
-			};
-		})();
-		episode_row.appendChild(td);
-	}
-	episode_row.style['visibility'] = 'visible';
-}
-
+/* Sends request to view specific episode. */
 function showEpisode(season, episode) {
 	setInactive('s' + season + 'e');
-	gebi('s' + season + 'e' + episode).className = "active";
+	var se_text = 's' + season + 'e' + episode;
+	if (gebi(se_text) != null) {
+		gebi(se_text).className = "active";
+	}
 	var query = 'simpsons.cgi?method=info&season=' + season + '&episode=' + episode;
 	sendRequest(query, handleEpisodeInfo);
 }
 
+/* Handles server response containing info about episode to be played. */
 function handleEpisodeInfo(req) {
 	var json;
 	try {
@@ -133,13 +116,16 @@ function handleEpisodeInfo(req) {
 	loadMovie(json, true);
 }
 
-function loadMovie(json, autoplay) { //title, videopath, thumbnail, autoplay) {
+/* Loads episode using provided object containing title, video path, etc. */
+function loadMovie(json, autoplay) {
 	try {
+		// Kill running videos if needed.
 		_V_("video").destroy();
 	} catch (error) { }
 	gebi("info_top").innerHTML = json['title'];
 	gebi("video_container").innerHTML = getContainerOutput(json);
 	gebi("info_container").innerHTML = getInfoOutput(json);
+	gebi("episode_content").style.display = 'table';
 	if (autoplay === true) {
 		var videojs = _V_("video");
 		videojs.load();
@@ -147,6 +133,9 @@ function loadMovie(json, autoplay) { //title, videopath, thumbnail, autoplay) {
 	}
 }
 
+/* Helper method.
+ * returns 'video container' inner HTML. 
+ * This is vital for displaying the video. */
 function getContainerOutput(json) {
 	var output = '';
 	output += '<video id="video" ';
@@ -161,6 +150,8 @@ function getContainerOutput(json) {
 	return output;
 }
 
+/* Helper method.
+ * Returns tabulated episode information. */
 function getInfoOutput(json) {
 	var info = '';
 	info += '<table>';
@@ -187,7 +178,7 @@ function getInfoOutput(json) {
 	return info;
 }
 
-// Converts from bytes to humnan-readable format
+/* Converts from # of bytes to humnan-readable format. */
 function intToSize(size) {
   var tier = ['t', 'g', 'm', 'k', ''];
   var current = Math.pow(1024, tier.length - 1); 
@@ -212,7 +203,7 @@ function makeHttpObject() {
 	throw new Error("Could not create HTTP request object.");
 }
 
-/* Sends request, shoots request to handler when complete. */
+/* Sends request, shoots request to handler if/when successful. */
 function sendRequest(url, handler) {
 	var req = makeHttpObject();
 	req.open("GET", url, true);
@@ -229,4 +220,5 @@ function sendRequest(url, handler) {
 	}
 }
 
+// Call initialization function after entire JS file is parsed
 window.onload = init;

@@ -75,6 +75,7 @@ td.info_top {
 }
 td.video_container {
 	padding: 25px;
+	border: none;
 }
 td.info_container {
 	border: none;
