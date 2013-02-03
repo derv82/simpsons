@@ -7,6 +7,13 @@ body {
 	text-align: center;
 }
 
+a {
+	color: #ff0;
+}
+a:hover {
+	color: #fff;
+}
+
 table {
 	border: none;
 	width: 100%;
@@ -42,6 +49,10 @@ tr.episode {
 	visibility: hidden;
 }
 
+table.content {
+	padding-top: 15px;
+}
+
 td.info_title {
 	width: 20%;
 }
@@ -49,6 +60,15 @@ td.info_content {
 	width: 80%;
 	text-align: left;
 	padding-left: 10px;
+}
+td.info_top {
+	padding: 10px;
+}
+td.video_container {
+	padding: 25px;
+}
+td.info_container {
+	border: none;
 }
 
 #media {

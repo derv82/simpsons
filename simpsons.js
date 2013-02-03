@@ -130,13 +130,16 @@ function getInfoOutput(json) {
 	info += '<tr><td class="info_title">Airdate   </td><td class="info_content">' + json['airdate']    + '</td></tr>';
 	info += '<tr><td class="info_title">Download  </td><td class="info_content"><a href="' + json['videopath'] + '">' + json['videopath'] + '</a> (' + intToSize(json['videosize']) + ')';
 	info += '<tr><td class="info_title">Synopsis  </td><td class="info_content">' + json['synopsis']   + '</td></tr>';
+	if (json['blackboard'] != null && json['blackboard'] !== '') {
+		info += '<tr><td class="info_title">Blackboard</td><td class="info_content">' + json['blackboard'] + '</td></tr>';
+	}
 	if (json['couch_gag'] != null && json['couch_gag'] !== '') {
 		info += '<tr><td class="info_title">Couch gag </td><td class="info_content">' + json['couch_gag']  + '</td></tr>';
 	}
-	if (json['chalkboard'] != null && json['chalkboard'] !== '') {
-		info += '<tr><td class="info_title">Chalkboard</td><td class="info_content">' + json['chalkboard'] + '</td></tr>';
-	}
 	info += '<tr id="plot" style="display: none;"><td class="info_title">Plot      </td><td class="info_content">' + json['plot']       + '</td></tr>';
+	if (json['notes'] != null && json['notes'] !== '') {
+		info += '<tr><td class="info_title">Notes</td><td class="info_content">' + json['notes']  + '</td></tr>';
+	}
 	info += '<tr><td class="info_title">Director  </td><td class="info_content">' + json['director']   + '</td></tr>';
 	info += '<tr><td class="info_title">Writer    </td><td class="info_content">' + json['writer']     + '</td></tr>';
 	info += '</table>';
