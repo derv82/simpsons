@@ -7,7 +7,16 @@ function init() {
 	sendRequest('simpsons.cgi?method=count_seasons', handleSeasonCount);
 	// Request Season 1, Episode 1 from server
 	// Note that this will auto-play the episode!
-	showEpisode(1, 1);
+	var url = String(window.location);
+	if (url.contains('#') >= 0) {
+		var hash = url.substring(url.lastIndexOf('#')+1);
+		console.log('"' + hash + '"');
+		var season = hash.replace(/s/, '').replace(/e.*$/, '');
+		var episode = hash.replace(/^.*e/, '');
+		showEpisode(season, episode);
+	} else {
+		showEpisode(1, 1);
+	}
 }
 
 /* Handles server response containing # of seasons. */
@@ -72,6 +81,10 @@ function handleSeasonInfo(req) {
 		td.onclick   = (function() { 
 			var current_season = season, current_episode = episode_index;
 			return function() {
+				// Set current URL to include hash to this season/episode
+				// So users can copy/paste the link & be brought back to this episode
+				var hash = "#s" + current_season + "e" + current_episode;
+				window.location = String(window.location).replace(/\#.*$/, "") + hash;
 				showEpisode(current_season, current_episode);
 			};
 		})();
@@ -122,7 +135,7 @@ function loadMovie(json, autoplay) {
 		// Kill running videos if needed.
 		_V_("video").destroy();
 	} catch (error) { }
-	gebi("info_top").innerHTML = json['title'];
+	gebi("info_top").innerHTML = 'Season ' + json['season'] + ' Episode ' + json['episode'] + ' - ' + json['title'];
 	gebi("video_container").innerHTML = getContainerOutput(json);
 	gebi("info_container").innerHTML = getInfoOutput(json);
 	gebi("episode_content").style.display = 'table';
@@ -155,27 +168,35 @@ function getContainerOutput(json) {
 function getInfoOutput(json) {
 	var info = '';
 	info += '<table>';
-	info += '<tr><td class="info_title">Title     </td><td class="info_content">' + json['title']      + '</td></tr>';
+	info += '<tr><td class="info_title">Title</td><td class="info_content">' + json['title']      + '</td></tr>';
+	// FIgure out airdate based on UTC timestamp
 	var date = new Date(0);
 	date.setUTCSeconds(parseInt(json['airdate']));
 	json['airdate'] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()] + ' ' + date.getDate() + ' ' + date.getFullYear(); 
-	info += '<tr><td class="info_title">Airdate   </td><td class="info_content">' + json['airdate']    + '</td></tr>';
-	info += '<tr><td class="info_title">Download  </td><td class="info_content"><a href="' + json['videopath'] + '">' + json['videopath'] + '</a> (' + intToSize(json['videosize']) + ')';
-	info += '<tr><td class="info_title">Synopsis  </td><td class="info_content">' + json['synopsis']   + '</td></tr>';
+	info += infoRow('Airdate', json['airdate']); 
+	
+	info += infoRow('Download', '<a href="' + json['videopath'] + '">' + json['videopath'] + '</a> (' + intToSize(json['videosize']) + ')'); 
+	info += infoRow('Synopsis', json['synopsis']); 
 	if (json['blackboard'] != null && json['blackboard'] !== '') {
-		info += '<tr><td class="info_title">Blackboard</td><td class="info_content">' + json['blackboard'] + '</td></tr>';
+		info += infoRow('Blackboard', json['blackboard']); 
 	}
 	if (json['couch_gag'] != null && json['couch_gag'] !== '') {
-		info += '<tr><td class="info_title">Couch gag </td><td class="info_content">' + json['couch_gag']  + '</td></tr>';
+		info += infoRow('Couch gag', json['couch_gag']); 
 	}
-	info += '<tr id="plot" style="display: none;"><td class="info_title">Plot      </td><td class="info_content">' + json['plot']       + '</td></tr>';
+	// Manually add table because we want to set plot BUT NOT DISPLAY IT
+	info += '<tr id="plot" style="display: none;"><td class="info_title">Plot</td><td class="info_content">' + json['plot'] + '</td></tr>';
 	if (json['notes'] != null && json['notes'] !== '') {
-		info += '<tr><td class="info_title">Notes</td><td class="info_content">' + json['notes']  + '</td></tr>';
+		info += infoRow('Notes', json['notes']); 
 	}
-	info += '<tr><td class="info_title">Director  </td><td class="info_content">' + json['director']   + '</td></tr>';
-	info += '<tr><td class="info_title">Writer    </td><td class="info_content">' + json['writer']     + '</td></tr>';
+	info += infoRow('Director', json['director']); 
+	info += infoRow('Writer', json['writer']); 
 	info += '</table>';
 	return info;
+}
+
+/* Helper function. Adds row to table with relevant label/content. */
+function infoRow(label, content) {
+	return '<tr><td class="info_title">' + label + '</td><td class="info_content">' + content + '</td></tr>';
 }
 
 /* Converts from # of bytes to humnan-readable format. */
