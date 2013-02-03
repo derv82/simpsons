@@ -10,6 +10,8 @@ from JSON import json # For formatting python objects into JSON
 from DB import DB # For querying database file
 db = DB('simpsons.db')
 
+import os
+
 def main():
 	""" Prints results of query """
 	keys = get_keys()
@@ -68,6 +70,7 @@ def print_episode_info(season, episode):
 	values = list(result[0])
 	for i in xrange(0, len(values)):
 		d[struct[i]] = values[i]
+	d['videosize'] = os.path.getsize(d['videopath'])
 	print json.dumps(d)
 
 def get_keys():

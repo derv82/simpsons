@@ -42,10 +42,15 @@ tr.episode {
 	visibility: hidden;
 }
 
-#info_top {
+td.info_title {
+	width: 20%;
 }
+td.info_content {
+	width: 80%;
+	text-align: left;
+	padding-left: 10px;
+}
+
 #media {
 	min-height: 200px;
-}
-#info_bottom {
 }
