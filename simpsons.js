@@ -8,7 +8,7 @@ function init() {
 	// Request Season 1, Episode 1 from server
 	// Note that this will auto-play the episode!
 	var url = String(window.location);
-	if (url.contains('#') >= 0) {
+	if (url.lastIndexOf('#') >= 0) {
 		var hash = url.substring(url.lastIndexOf('#')+1);
 		console.log('"' + hash + '"');
 		var season = hash.replace(/s/, '').replace(/e.*$/, '');
