@@ -19,11 +19,7 @@ def main():
 		print '{"error": "Method not found"}'
 		return
 	
-	if keys['method'] == 'count':
-		# Display # of episodes in each season
-		print_episode_count()
-
-	elif keys['method'] == 'count_seasons':
+	if keys['method'] == 'count_seasons':
 		print_season_count()
 
 	elif keys['method'] == 'info' and \
@@ -35,34 +31,30 @@ def main():
 	elif keys['method'] == 'season_info' and \
 			'season' in keys:
 		# Show titles/synopses for a specific season
-		print_season_info()
+		print_season_info(keys['season'])
 
 	else:
 		print '{"error": "Unknown method"}'
-
-def print_episode_count():
-	""" Counts seasons/episodes, returns array of episode counts [13, 22, ...] """
-	result = []
-	for season in xrange(1, 22): # db.select('MAX(season)', 'Episodes')[0][0]
-		result.append(db.select('COUNT(episode)', 'Episodes', 'season = %d' % season)[0][0])
-	print json.dumps( {'counts' : result} )
 
 def print_season_count():
 	""" Counts # of seasons, returns in key 'count'. """
 	print '{"count": %d}' % (db.select('COUNT(DISTINCT season)', 'Episodes')[0][0])
 
 def print_season_info(season):
-	""" Returns list of episode titles & synopses (in order). keys are 't' and 's' respectively. """
+	""" Shows list of episodes for season; includes titles and synopses.
+			returns keys 'season' (int) and 'episodes' (list) with keys 't' and 's' for title and synopsis.
+	"""
 	try:
 		iseason = int(season)
 	except:
 		print '{"error": "incorrect season format"}'
 		return
-	l = db.select('title, synopsis', 'episodes', "season = 3 ORDER BY episode")
+	l = db.select('title, synopsis', 'episodes', "season = %d ORDER BY episode" % iseason)
 	result = []
 	for i in l:
 		result.append({'t': i[0], 's': i[1]})
-	print json.dumps(result)
+	d = {'season': season, 'episodes': result}
+	print json.dumps(d)
 
 
 def print_episode_info(season, episode):
@@ -97,7 +89,10 @@ def print_episode_info(season, episode):
 	values = list(result[0])
 	for i in xrange(0, len(values)):
 		d[struct[i]] = values[i]
-	d['videosize'] = os.path.getsize(d['videopath'])
+	if os.path.exists(d['videopath']):
+		d['videosize'] = os.path.getsize(d['videopath'])
+	else:
+		d['videosize'] = 0
 	print json.dumps(d)
 
 def get_keys():

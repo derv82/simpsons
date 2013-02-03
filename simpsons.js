@@ -1,16 +1,18 @@
 /* Helper function: Shortened version of getElementById. */
 function gebi(id) { return document.getElementById(id); }
 
-var EPISODE_COUNTS = new Array();
 /* Initialization. Runs when window first loads. */
 function init() {
-	// Request seasons
-	sendRequest('simpsons.cgi?method=count', handleEpisodeCounts);
+	// Request # of seasons
+	sendRequest('simpsons.cgi?method=count_seasons', handleSeasonCount);
+	// Cached JSON for first season
 	var json = {"plot": "After attending the Springfield Elementary School Christmas pageant, the Simpsons prepare for the holiday season. Marge asks Bart and Lisa for their letters to Santa. Lisa requests a pony, and Bart requests a tattoo. The next day, Marge takes the kids to the mall to go Christmas shopping at a department store in the mall. Bart slips away to the tattoo parlor and attempts to get a tattoo that reads \"Mother\". With the tattoo partially completed, Marge bursts in and drags Bart two doors down to the dermatologist to have it removed. Counting on Homer's Christmas bonus, Marge spends all of the family's holiday money on the procedure. Meanwhile, at the power plant Homer's boss, Mr. Burns, announces that there will be no Christmas bonus this year.\n\nHomer, discovering there is no money for Christmas presents and not wanting to worry the family, takes a job as a shopping mall Santa Claus at the suggestion of his friend Barney Gumble. On Christmas Eve, Bart goes to the mall and harasses Santa, exposing Homer's secret. After Homer is paid less than expected for his Department Store Santa work, he and Bart receive a hot dog racing tip from Barney.\n\nAt Springfield Downs, Homer, inspired by an announcement about a last-minute entry named Santa's Little Helper, bet all his money on the 99-1 long shot. The greyhound finishes last. As Homer and Bart leave the track, they watch the dog's owner angrily disowning him for losing the race. Bart pleads with Homer to keep the dog as a pet, and he reluctantly agrees. When Bart and Homer return home, Homer finally comes clean to the family that he didn't get his bonus, but all is forgiven with the arrival of Santa's Little Helper who is assumed to be a Christmas present for the whole family.", "code": "7G08", "episode": 1, "videopath": "videos\/s01e01.mp4", "episodenum": 1, "season": 1, "notes": "Patty, Selma, Ned and Todd Flanders, Mr. Burns, Smithers, and Grampa Simpson are introduced (although Smithers has a voice-only part). <br>This episode is on the <i>Christmas with the Simpsons<\/i> DVD (as well as on the Season 1 DVD set).", "airdate": "629884800", "videosize": 100908321, "director": "David Silverman", "couch_gag": "", "synopsis": "It's a not-so-merry Christmas for the Simpsons, when Mr. Burns decides to cut the Christmas bonuses and Marge had to spend the Christmas savings to erase a tattoo Bart thought would make a great Christmas present. In order to hide the fact that he did not get the bonus, Homer takes a second job as a store Santa.", "blackboard": "", "title": "Simpsons Roasting on an Open Fire (The Simpsons Christmas Special)", "writer": "Mimi Pond", "thumbnail": "pics\/s1e1.jpg"};
 	loadMovie(json, false);
+	// TODO Send a request for this instead?
 }
 
-function handleEpisodeCounts(req) {
+/* Handles server response containing # of seasons. */
+function handleSeasonCount(req) {
 	var json;
 	try {
 		json = JSON.parse(req.responseText);
@@ -18,21 +20,61 @@ function handleEpisodeCounts(req) {
 		console.log("Unable to parse response:\n" + req.responseText);
 		return;
 	}
-	EPISODE_COUNTS = json['counts'];
 	var season_row = gebi('season_row');
-	for (var i = 1; i <= EPISODE_COUNTS.length; i++) {
+	for (var season = 1; season <= json['count']; season++) {
 		var td = document.createElement('td');
 		td.className = 'index';
-		td.innerHTML = i;
-		td.id = "season" + i;
+		td.innerHTML = season;
+		td.id        = "season" + season;
+		td.title     = "Season " + season;
 		td.onclick = (function() { 
-			var current_i = i, current_count = EPISODE_COUNTS[i-1];
+			var current_season = season;
 			return function() { 
-				showSeason(current_i, current_count);
+				sendRequest('simpsons.cgi?method=season_info&season=' + current_season, handleSeasonInfo);
 			};
 		})();
 		season_row.appendChild(td);
 	}
+}
+
+/* Handles server response containing list of titles/synopses for
+ * all episodes in a given season. */
+function handleSeasonInfo(req) {
+	var json;
+	try {
+		json = JSON.parse(req.responseText);
+	} catch (error) {
+		console.log("Unable to parse response:\n" + req.responseText);
+		return;
+	}
+	var season = json['season']
+	var episode_row = gebi('episode_row');
+	// Reset UI
+	setInactive('season');
+	gebi('season' + season).className = 'active';
+	// Remove existing episode nodes
+	while (episode_row.lastChild.className !== 'label') {
+		episode_row.removeChild(episode_row.lastChild);
+	}
+	var episodes = json['episodes'];
+	for (var i in episodes) {
+		// Add node for every episode
+		var episode_index = parseInt(i) + 1;
+		var td = document.createElement('td');
+		td.className = 'index';
+		td.innerHTML = episode_index;
+		td.id        = "s" + season + "e" + episode_index;
+		td.title     = episodes[i]['t'] + '\n\n' + episodes[i]['s'];
+		td.synopsis  = episodes[i]['s'];
+		td.onclick   = (function() { 
+			var current_season = season, current_episode = episode_index;
+			return function() {
+				showEpisode(current_season, current_episode);
+			};
+		})();
+		episode_row.appendChild(td);
+	}
+	episode_row.style['visibility'] = 'visible';
 }
 
 function setInactive(idPrefix) {
@@ -48,7 +90,7 @@ function setInactive(idPrefix) {
 }
 
 
-function showSeason(season, episode_count) {
+function showSeason(season) {
 	var episode_row = gebi('episode_row');
 	setInactive('season');
 	gebi('season' + season).className = 'active';
@@ -125,7 +167,6 @@ function getInfoOutput(json) {
 	info += '<tr><td class="info_title">Title     </td><td class="info_content">' + json['title']      + '</td></tr>';
 	var date = new Date(0);
 	date.setUTCSeconds(parseInt(json['airdate']));
-	console.log("date = " + date);
 	json['airdate'] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()] + ' ' + date.getDate() + ' ' + date.getFullYear(); 
 	info += '<tr><td class="info_title">Airdate   </td><td class="info_content">' + json['airdate']    + '</td></tr>';
 	info += '<tr><td class="info_title">Download  </td><td class="info_content"><a href="' + json['videopath'] + '">' + json['videopath'] + '</a> (' + intToSize(json['videosize']) + ')';
@@ -181,8 +222,8 @@ function sendRequest(url, handler) {
 			if (req.status == 200) {
 				handler(req);
 			} else {
-				console.log("Request status " + request.status + " for URL " + url);
-				throw new Error("Request status " + request.status + " for URL " + url);
+				console.log("Request status " + req.status + " for URL " + url);
+				throw new Error("Request status " + req.status + " for URL " + url);
 			}
 		}
 	}
