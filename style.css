@@ -7,6 +7,15 @@ body {
 	text-align: center;
 }
 
+div.title {
+	font-size: 4.0em;
+	font-weight: bold;
+	padding-bottom: 10px;
+	border: solid 3px #ff0;
+	border-radius: 60px;
+	width: 640px;
+}
+
 a {
 	color: #ff0;
 }

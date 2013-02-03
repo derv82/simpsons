@@ -22,21 +22,48 @@ def main():
 	if keys['method'] == 'count':
 		# Display # of episodes in each season
 		print_episode_count()
+
+	elif keys['method'] == 'count_seasons':
+		print_season_count()
+
 	elif keys['method'] == 'info' and \
 			'season'  in keys and \
 			'episode' in keys:
 		# Show information for a specific episode
 		print_episode_info(keys['season'], keys['episode'])
+
+	elif keys['method'] == 'season_info' and \
+			'season' in keys:
+		# Show titles/synopses for a specific season
+		print_season_info()
+
 	else:
 		print '{"error": "Unknown method"}'
 
 def print_episode_count():
 	""" Counts seasons/episodes, returns array of episode counts [13, 22, ...] """
-	max_season = db.select('MAX(season)', 'Episodes')[0][0]
 	result = []
-	for season in xrange(1, max_season + 1):
+	for season in xrange(1, 22): # db.select('MAX(season)', 'Episodes')[0][0]
 		result.append(db.select('COUNT(episode)', 'Episodes', 'season = %d' % season)[0][0])
 	print json.dumps( {'counts' : result} )
+
+def print_season_count():
+	""" Counts # of seasons, returns in key 'count'. """
+	print '{"count": %d}' % (db.select('COUNT(DISTINCT season)', 'Episodes')[0][0])
+
+def print_season_info(season):
+	""" Returns list of episode titles & synopses (in order). keys are 't' and 's' respectively. """
+	try:
+		iseason = int(season)
+	except:
+		print '{"error": "incorrect season format"}'
+		return
+	l = db.select('title, synopsis', 'episodes', "season = 3 ORDER BY episode")
+	result = []
+	for i in l:
+		result.append({'t': i[0], 's': i[1]})
+	print json.dumps(result)
+
 
 def print_episode_info(season, episode):
 	try:
