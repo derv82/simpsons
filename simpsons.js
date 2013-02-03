@@ -206,7 +206,7 @@ function intToSize(size) {
   for (var i in tier) {
     if (size >= current) {
       var num = size / current;
-      return num.toPrecision(2) + tier[i] + 'b' 
+      return num.toFixed(2) + tier[i] + 'b' 
     }   
     current /= 1024;
   }
