@@ -17,6 +17,9 @@ function init() {
 	} else {
 		showEpisode(1, 1);
 	}
+	gebi("endless").onclick = function() { endlessClick(); };
+	gebi("shuffle").onclick = function() { shuffleClick(); };
+	gebi("random").onclick  = function() { randomClick();  };
 }
 
 /* Handles server response containing # of seasons. */
@@ -81,10 +84,6 @@ function handleSeasonInfo(req) {
 		td.onclick   = (function() { 
 			var current_season = season, current_episode = episode_index;
 			return function() {
-				// Set current URL to include hash to this season/episode
-				// So users can copy/paste the link & be brought back to this episode
-				var hash = "#s" + current_season + "e" + current_episode;
-				window.location = String(window.location).replace(/\#.*$/, "") + hash;
 				showEpisode(current_season, current_episode);
 			};
 		})();
@@ -135,7 +134,11 @@ function loadMovie(json, autoplay) {
 		// Kill running videos if needed.
 		_V_("video").destroy();
 	} catch (error) { }
-	gebi("info_top").innerHTML = 'Season ' + json['season'] + ' Episode ' + json['episode'] + ' - ' + json['title'];
+	// Set current URL to include hash to this season/episode
+	// So users can copy/paste the link & be brought back to this episode
+	var hash = "#s" + json['season'] + "e" + json['episode'];
+	window.location = String(window.location).replace(/\#.*$/, "") + hash;
+	gebi("info_top").innerHTML = 'S' + json['season'] + ' E' + json['episode'] + ' - ' + json['title'];
 	gebi("video_container").innerHTML = getContainerOutput(json);
 	gebi("info_container").innerHTML = getInfoOutput(json);
 	gebi("episode_content").style.display = 'table';
@@ -144,6 +147,11 @@ function loadMovie(json, autoplay) {
 		videojs.load();
 		videojs.play();
 	}
+	_V_("video").ready(function() {
+		this.addEvent("ended", function() {
+			videoEnded();
+		});
+	});
 }
 
 /* Helper method.
@@ -156,7 +164,7 @@ function getContainerOutput(json) {
 	output += '       controls preload="auto" ';
 	output += '       width="640" ';
 	output += '       height="480" ';
-	output += '       poster="' + json['thumbnail'] + '"';
+	output += '       poster="' + json['thumbnail'] + '" ';
 	output += '       data-setup="{}">';
 	output += '  <source src="' + json['videopath'] + '" type="video/mp4">';
 	output += '</video>';
@@ -169,7 +177,7 @@ function getInfoOutput(json) {
 	var info = '';
 	info += '<table>';
 	info += '<tr><td class="info_title">Title</td><td class="info_content">' + json['title'] + '</td></tr>';
-	// FIgure out airdate based on UTC timestamp
+	// Figure out airdate based on UTC timestamp
 	var date = new Date(0);
 	date.setUTCSeconds(parseInt(json['airdate']));
 	json['airdate'] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][date.getMonth()] + ' ' + date.getDate() + ' ' + date.getFullYear(); 
@@ -187,7 +195,7 @@ function getInfoOutput(json) {
 	return info;
 }
 
-/* Helper function. Adds row to table with relevant label/content. */
+/* Helper function. Returns table row with relevant label/content. */
 function infoRow(label, content) {
 	if (content == null || content === '') return '';
 	return '<tr><td class="info_title">' + label + '</td><td class="info_content">' + content + '</td></tr>';
@@ -195,16 +203,16 @@ function infoRow(label, content) {
 
 /* Converts from # of bytes to humnan-readable format. */
 function intToSize(size) {
-  var tier = ['t', 'g', 'm', 'k', ''];
+  var tier = ['T', 'G', 'M', 'K', ''];
   var current = Math.pow(1024, tier.length - 1); 
   for (var i in tier) {
     if (size >= current) {
       var num = size / current;
-      return num.toFixed(2) + tier[i] + 'b' 
+      return num.toFixed(2) + tier[i] + 'B' 
     }   
     current /= 1024;
   }
-  return '0b';
+  return '0B';
 }
 
 /* Create new XML/AJAX request object */
@@ -233,6 +241,39 @@ function sendRequest(url, handler) {
 			}
 		}
 	}
+}
+
+/* Event when video has finished playing. */
+function videoEnded() {
+	if (gebi("endless").className !== 'option_enabled') { return; }
+	var query = 'simpsons.cgi?method=next';
+	if (gebi("shuffle").className === 'option_enabled') {
+		query += '&random=true';
+	}
+	// Need to send current episode to know next episode
+	var src = gebi("video").baseURI;
+	src = src.substring(src.lastIndexOf('#')+1);
+	query += '&current=' + src;
+	sendRequest(query, handleEpisodeInfo);
+}
+
+function endlessClick() {
+	var element = gebi('endless');
+	if (element.className === 'option_enabled') {
+		element.setAttribute('class', 'option_disabled');
+	} else {
+		element.setAttribute('class', 'option_enabled');
+	}
+}
+function shuffleClick() {
+	var element = gebi('shuffle');
+	if (element.className === 'option_enabled') {
+		element.setAttribute('class', 'option_disabled');
+	} else {
+		element.setAttribute('class', 'option_enabled');
+	}
+}
+function randomClick() {
 }
 
 // Call initialization function after entire JS file is parsed

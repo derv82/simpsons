@@ -14,24 +14,6 @@ body {
 	text-align: center;
 }
 
-div.title {
-	background-color: #6ca8de; /*#613776;*/
-	color: #fae19c; /*#dd0;*/
-	font-size: 4.0em;
-	font-weight: bold;
-	text-shadow: /*-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, /* text outline */
-	              3px  3px 15px rgba(0, 0, 0, 0.2),
-	              3px -3px 15px rgba(0, 0, 0, 0.2),
-	             -3px  3px 15px rgba(0, 0, 0, 0.2),
-	             -3px -3px 15px rgba(0, 0, 0, 0.2);
-	padding-bottom: 10px;
-	padding-top: 10px;
-	border: solid 3px #ff0;
-	border-radius: 60px;
-	width: 640px;
-	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
-}
-
 a {
 	color: #ff0;
 }
@@ -53,6 +35,26 @@ td {
 	max-width: 50px;
 }
 
+/* TITLE BOX */
+div.title {
+	background-color: #6ca8de; /*#613776;*/
+	color: #fae19c; /*#dd0;*/
+	font-size: 4.0em;
+	font-weight: bold;
+	text-shadow: /*-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, /* text outline */
+	              3px  3px 15px rgba(0, 0, 0, 0.2),
+	              3px -3px 15px rgba(0, 0, 0, 0.2),
+	             -3px  3px 15px rgba(0, 0, 0, 0.2),
+	             -3px -3px 15px rgba(0, 0, 0, 0.2);
+	padding-bottom: 10px;
+	padding-top: 10px;
+	border: solid 3px #ff0;
+	border-radius: 60px;
+	width: 640px;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
+}
+
+/* SEASON/EPISODE SELECTION */
 td.label {
 	background-color: #dd0;
 	font-weight: bold;
@@ -78,15 +80,34 @@ td.active {
 	cursor: default;
 	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
-
 tr.episode {
 	visibility: hidden;
 }
 
+/* OPTIONS */
+td.option_disabled {
+	background-color: #a33;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
+}
+td.option_disabled:hover {
+	background-color: #d22;
+	cursor: pointer;
+}
+td.option_enabled {
+	background-color: #3a3;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
+}
+td.option_enabled:hover {
+	background-color: #2d2;
+	cursor: pointer;
+}
+
+/* SPECIFIC EPISODE INFORMATION/MEDIA/ETC */
 table.content {
 	padding-top: 15px;
 }
 
+/* EPISODE TITLE */
 td.info_top {
 	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
@@ -94,23 +115,12 @@ div#info_top {
 	padding: 5px;
 	font-size: 1.2em;
 }
-td.info_title {
-	width: 20%;
-	text-align: center;
-	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
-}
-td.info_content {
-	width: 80%;
-	text-align: left;
-	padding-left: 10px;
-	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
-}
-td.video_container {
+td.video_container { /* Holds the "TV" */
 	border: none;
 	background-color: transparent;
 	padding: 30px;
 }
-td.tv {
+td.tv { /* TV border */
 	background-color: #613776;
 	padding: 25px;
 	border: none;
@@ -120,7 +130,7 @@ td.tv {
 	text-align: left;
 	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
-div#video_container {
+div#video_container { /* Holds the "TV Screen" */
 	background-color: #2b2f52;
 	width: 640px;
 	height: 480px;
@@ -130,15 +140,28 @@ div#video_container {
 	border: solid 2px #000;
 }
 
-td.info_container {
+/* EPISODE INFORMATION */
+td.info_container { /* Holds episode info */
 	border: none;
 	background-color: transparent;
 }
+td.info_title { /* "Label" for episode info row */
+	width: 20%;
+	text-align: center;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
+}
+td.info_content { /* Content of episode info row */
+	width: 80%;
+	text-align: left;
+	padding-left: 10px;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
+}
 
+
+/* THE REST */
 #media {
 	min-height: 200px;
 }
-
 div.footer {
 	padding-top: 20px;
 	text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.4);
