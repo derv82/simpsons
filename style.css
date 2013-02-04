@@ -2,10 +2,12 @@
  * pink:   dd7f8d
  * purple: 613776
  * yellow: dd0
+ * skyblue: 6ca8de
+ * simpsons yellow: f9d08b
  */
 body {
 	background-color: #dd7f8d;
-	color: #613776;
+	color: #dd0; /*#613776;*/
 	font-weight: bold;
 	font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
 	padding: 20px;
@@ -13,14 +15,21 @@ body {
 }
 
 div.title {
-	background-color: #613776;
-	color: #dd0;
+	background-color: #6ca8de; /*#613776;*/
+	color: #fae19c; /*#dd0;*/
 	font-size: 4.0em;
 	font-weight: bold;
+	text-shadow: /*-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, /* text outline */
+	              3px  3px 15px rgba(0, 0, 0, 0.2),
+	              3px -3px 15px rgba(0, 0, 0, 0.2),
+	             -3px  3px 15px rgba(0, 0, 0, 0.2),
+	             -3px -3px 15px rgba(0, 0, 0, 0.2);
 	padding-bottom: 10px;
+	padding-top: 10px;
 	border: solid 3px #ff0;
 	border-radius: 60px;
 	width: 640px;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 
 a {
@@ -46,13 +55,17 @@ td {
 
 td.label {
 	background-color: #dd0;
+	font-weight: bold;
 	color: #613776;
+	font-size: 1.2em;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 td.label:hover {
 	cursor: default;
 }
 td.index {
 	max-width: 10px;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 td.index:hover {
 	background-color: #aa3;
@@ -63,6 +76,7 @@ td.active {
 	background-color: #dd0;
 	color: #613776;
 	cursor: default;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 
 tr.episode {
@@ -73,16 +87,23 @@ table.content {
 	padding-top: 15px;
 }
 
+td.info_top {
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
+}
+div#info_top {
+	padding: 5px;
+	font-size: 1.2em;
+}
 td.info_title {
 	width: 20%;
+	text-align: center;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 td.info_content {
 	width: 80%;
 	text-align: left;
 	padding-left: 10px;
-}
-td.info_top {
-	padding: 10px;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 td.video_container {
 	border: none;
@@ -97,6 +118,7 @@ td.tv {
 	min-width: 700px;
 	min-height: 520px;
 	text-align: left;
+	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 div#video_container {
 	background-color: #2b2f52;
@@ -115,4 +137,9 @@ td.info_container {
 
 #media {
 	min-height: 200px;
+}
+
+div.footer {
+	padding-top: 20px;
+	text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.4);
 }
