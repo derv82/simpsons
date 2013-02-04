@@ -36,6 +36,8 @@ td {
 }
 
 td.label {
+	background-color: #dd0;
+	color: #222;
 }
 td.label:hover {
 	cursor: default;
