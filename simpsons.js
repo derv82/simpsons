@@ -257,6 +257,7 @@ function videoEnded() {
 	sendRequest(query, handleEpisodeInfo);
 }
 
+/* Enable/disable endless play. */
 function endlessClick() {
 	var element = gebi('endless');
 	if (element.className === 'option_enabled') {
@@ -265,6 +266,7 @@ function endlessClick() {
 		element.setAttribute('class', 'option_enabled');
 	}
 }
+/* Enable/disable shuffle during endless play. */
 function shuffleClick() {
 	var element = gebi('shuffle');
 	if (element.className === 'option_enabled') {
@@ -273,7 +275,15 @@ function shuffleClick() {
 		element.setAttribute('class', 'option_enabled');
 	}
 }
+/* Select a random episode. */
 function randomClick() {
+	var query = 'simpsons.cgi?method=next';
+	query += '&random=true';
+	// Need to send current episode to know next episode
+	var src = gebi("video").baseURI;
+	src = src.substring(src.lastIndexOf('#')+1);
+	query += '&current=' + src;
+	sendRequest(query, handleEpisodeInfo);
 }
 
 // Call initialization function after entire JS file is parsed
