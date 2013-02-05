@@ -143,6 +143,7 @@ def print_episode_info(season, episode):
 		d['videosize'] = os.path.getsize(d['videopath'])
 	else:
 		d['videosize'] = 0
+	d['episode_count'] = db.select('COUNT(*)', 'Episodes', 'season = %d' % (s))[0][0]
 	print json.dumps(d)
 
 def get_keys():

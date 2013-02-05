@@ -10,12 +10,15 @@ function init() {
 	var url = String(window.location);
 	if (url.lastIndexOf('#') >= 0) {
 		var hash = url.substring(url.lastIndexOf('#')+1);
-		console.log('"' + hash + '"');
 		var season = hash.replace(/s/, '').replace(/e.*$/, '');
 		var episode = hash.replace(/^.*e/, '');
 		showEpisode(season, episode);
+	} else if (getCookie('season') !== '' && getCookie('episode') !== '') {
+		// Load last episode viewed
+		showEpisode(getCookie('season'), getCookie('episode'));
 	} else {
-		showEpisode(1, 1);
+		// Load random episode
+		randomClick();
 	}
 	gebi("endless").onclick = function() { endlessClick(); };
 	gebi("shuffle").onclick = function() { shuffleClick(); };
@@ -42,6 +45,7 @@ function handleSeasonCount(req) {
 		td.onclick = (function() { 
 			var current_season = season;
 			return function() { 
+				if (this.className == 'active') return;
 				gebi("episode_row").style.visibility = 'hidden';
 				var query = 'simpsons.cgi?method=season_info&season=' + current_season
 				sendRequest(query, handleSeasonInfo);
@@ -84,6 +88,7 @@ function handleSeasonInfo(req) {
 		td.onclick   = (function() { 
 			var current_season = season, current_episode = episode_index;
 			return function() {
+				if (this.className == 'active') return;
 				showEpisode(current_season, current_episode);
 			};
 		})();
@@ -107,11 +112,6 @@ function setInactive(idPrefix) {
 
 /* Sends request to view specific episode. */
 function showEpisode(season, episode) {
-	setInactive('s' + season + 'e');
-	var se_text = 's' + season + 'e' + episode;
-	if (gebi(se_text) != null) {
-		gebi(se_text).className = "active";
-	}
 	var query = 'simpsons.cgi?method=info&season=' + season + '&episode=' + episode;
 	sendRequest(query, handleEpisodeInfo);
 }
@@ -134,10 +134,46 @@ function loadMovie(json, autoplay) {
 		// Kill running videos if needed.
 		_V_("video").destroy();
 	} catch (error) { }
+	// Select current season in row of Seasons
+	setInactive('season');
+	var season = json['season'];
+	gebi('season' + season).className = 'active';
+	var episode_row = gebi('episode_row');
+	while (episode_row.lastChild.className !== 'label') {
+		episode_row.removeChild(episode_row.lastChild);
+	}
+	// Build row of "Episodes"
+	var episodes = json['episodes'];
+	for (var i = 0; i < json['episode_count']; i++) {
+		// Add node for every episode
+		var episode_index = parseInt(i) + 1;
+		var td = document.createElement('td');
+		td.className = 'index';
+		td.innerHTML = episode_index;
+		td.id        = "s" + season + "e" + episode_index;
+		td.onclick   = (function() { 
+			var current_season = season, current_episode = episode_index;
+			return function() {
+				showEpisode(current_season, current_episode);
+			};
+		})();
+		episode_row.appendChild(td);
+	}
+	// Select the current episode
+	var episode = json['episode'];
+	setInactive('s' + season + 'e');
+	var se_text = 's' + season + 'e' + episode;
+	if (gebi(se_text) != null) {
+		gebi(se_text).className = "active";
+	}
+	episode_row.style['visibility'] = 'visible';
+
 	// Set current URL to include hash to this season/episode
 	// So users can copy/paste the link & be brought back to this episode
 	var hash = "#s" + json['season'] + "e" + json['episode'];
 	window.location = String(window.location).replace(/\#.*$/, "") + hash;
+	setCookie('season', json['season']);
+	setCookie('episode', json['episode']);
 	gebi("info_top").innerHTML = 'S' + json['season'] + ' E' + json['episode'] + ' - ' + json['title'];
 	gebi("video_container").innerHTML = getContainerOutput(json);
 	gebi("info_container").innerHTML = getInfoOutput(json);
@@ -280,10 +316,29 @@ function randomClick() {
 	var query = 'simpsons.cgi?method=next';
 	query += '&random=true';
 	// Need to send current episode to know next episode
-	var src = gebi("video").baseURI;
-	src = src.substring(src.lastIndexOf('#')+1);
-	query += '&current=' + src;
+	if (gebi("video") != null) {
+		var src = gebi("video").baseURI;
+		src = src.substring(src.lastIndexOf('#')+1);
+		query += '&current=' + src;
+	} else {
+		query += '&current=s30e30';
+	}
 	sendRequest(query, handleEpisodeInfo);
+}
+
+/** COOKIES! */
+function setCookie(key, value) {
+	document.cookie = key + '=' + value + '; expires=Fri, 27 Dec 2999 00:00:00 UTC; path=/';
+}
+function getCookie(key) {
+	var cookies = document.cookie.split('; ');
+	for (var i in cookies) {
+		var pair = cookies[i].split('=');
+		if (pair[0] == key) {
+			return pair[1];
+		}
+	}
+	return ""; 
 }
 
 // Call initialization function after entire JS file is parsed
