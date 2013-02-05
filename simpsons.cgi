@@ -42,6 +42,9 @@ def main():
 			print_random_episode(keys['current'])
 		else:
 			print_next_episode(keys['current'])
+	elif keys['method'] == 'prev' and \
+			'current' in keys:
+		print_prev_episode(keys['current'])
 
 	else:
 		print '{"error": "Unknown method"}'
@@ -72,6 +75,22 @@ def print_next_episode(current):
 	else: # Start over if we hit the last ep in last season
 		s = 1
 		e = 1
+	print_episode_info(str(s), str(e))
+
+def print_prev_episode(current):
+	try:
+		(s, e) = parse_season_episode(current)
+	except:
+		print '{"error": "incorrect season/episode format"}'
+		return
+	if e > 1:
+		e -= 1
+	else:
+		if s > 1:
+			s -= 1
+		else:
+			s = MAX_SEASON
+		e = db.select('MAX(episode)', 'Episodes', 'season == %d' % (s))[0][0]
 	print_episode_info(str(s), str(e))
 
 def parse_season_episode(current):

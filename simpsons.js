@@ -23,6 +23,8 @@ function init() {
 	gebi("endless").onclick = function() { endlessClick(); };
 	gebi("shuffle").onclick = function() { shuffleClick(); };
 	gebi("random").onclick  = function() { randomClick();  };
+	gebi("knob_previous").onclick = function() { prevEpisode(); };
+	gebi("knob_next").onclick     = function() { nextEpisode(); };
 }
 
 /* Handles server response containing # of seasons. */
@@ -137,6 +139,15 @@ function loadMovie(json, autoplay) {
 	// Select current season in row of Seasons
 	setInactive('season');
 	var season = json['season'];
+	// Wait for "Seasons" row to appear
+	var tid = setTimeout(function() {
+		if (gebi('season' + season) != null) {
+			clearTimeout(tid);
+		} else {
+			console.log("waiting for season to appear");
+		}
+	}, 500);
+	while (gebi('season' + season) == null) { }
 	gebi('season' + season).className = 'active';
 	var episode_row = gebi('episode_row');
 	while (episode_row.lastChild.className !== 'label') {
@@ -315,13 +326,38 @@ function shuffleClick() {
 function randomClick() {
 	var query = 'simpsons.cgi?method=next';
 	query += '&random=true';
-	// Need to send current episode to know next episode
+	// Need to send current episode to calc random episode
 	if (gebi("video") != null) {
 		var src = gebi("video").baseURI;
 		src = src.substring(src.lastIndexOf('#')+1);
 		query += '&current=' + src;
 	} else {
 		query += '&current=s30e30';
+	}
+	sendRequest(query, handleEpisodeInfo);
+}
+
+function prevEpisode() {
+	var query = 'simpsons.cgi?method=prev';
+	// Need to send current episode to know prev episode
+	if (gebi("video") != null) {
+		var src = gebi("video").baseURI;
+		src = src.substring(src.lastIndexOf('#')+1);
+		query += '&current=' + src;
+	} else {
+		query += '&current=s1e2';
+	}
+	sendRequest(query, handleEpisodeInfo);
+}
+function nextEpisode() {
+	var query = 'simpsons.cgi?method=next';
+	// Need to send current episode to know prev episode
+	if (gebi("video") != null) {
+		var src = gebi("video").baseURI;
+		src = src.substring(src.lastIndexOf('#')+1);
+		query += '&current=' + src;
+	} else {
+		query += '&current=s1e1';
 	}
 	sendRequest(query, handleEpisodeInfo);
 }

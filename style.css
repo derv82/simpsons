@@ -114,8 +114,7 @@ table.content {
 	padding-top: 15px;
 }
 
-/* EPISODE TITLE */
-td.info_top {
+td.info_top { /* EPISODE TITLE */
 	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 div#info_top {
@@ -127,24 +126,50 @@ td.video_container { /* Holds the "TV" */
 	background-color: transparent;
 	padding: 30px;
 }
+table.tv {
+	width: 800px;
+}
 td.tv { /* TV border */
 	background-color: #613776;
 	padding: 25px;
+	padding-right: 10px;
 	border: none;
 	border-radius: 15px;
 	min-width: 700px;
+	max-width: 700px;
 	min-height: 520px;
-	text-align: left;
+	text-align: center;
 	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 div#video_container { /* Holds the "TV Screen" */
 	background-color: #2b2f52;
 	width: 640px;
 	height: 480px;
-	display: block;
+	/*display: block;*/
 	padding: 25px;
 	border-style: inset;
 	border: solid 2px #000;
+}
+td.knob_text {
+	font-size: 0.6em;
+	font-weight: normal;
+	color: #dd0;
+	border: none;
+}
+#knob_previous, #knob_next {
+	width: 15px;
+	height: 15px;
+	background-color: #007c6c;
+	display: table-cell;
+	border-radius: 55px;
+	border: solid 2px #000;
+}
+#knob_previous:hover, #knob_next:hover {
+	background-color: #118d7d;
+}
+td.knob_gap {
+	padding-top: 30px;
+	border: none;
 }
 
 /* EPISODE INFORMATION */
@@ -161,6 +186,7 @@ td.info_content { /* Content of episode info row */
 	width: 80%;
 	text-align: left;
 	padding-left: 10px;
+	font-weight: normal;
 	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 
