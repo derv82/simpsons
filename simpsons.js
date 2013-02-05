@@ -181,8 +181,11 @@ function loadMovie(json, autoplay) {
 
 	// Set current URL to include hash to this season/episode
 	// So users can copy/paste the link & be brought back to this episode
-	var hash = "#s" + json['season'] + "e" + json['episode'];
-	window.location = String(window.location).replace(/\#.*$/, "") + hash;
+	var hash = "s" + json['season'] + "e" + json['episode'];
+	var node = gebi(hash);
+	node.setAttribute('id', '');
+	window.location = String(window.location).replace(/\#.*$/, "") + '#' + hash;
+	node.setAttribute('id', hash);
 	setCookie('season', json['season']);
 	setCookie('episode', json['episode']);
 	gebi("info_top").innerHTML = 'S' + json['season'] + ' E' + json['episode'] + ' - ' + json['title'];
