@@ -37,20 +37,28 @@ td {
 
 /* TITLE BOX */
 div.title {
+	width: 900px;
+	height: 280px;
 	background-color: #6ca8de; /*#613776;*/
-	color: #fae19c; /*#dd0;*/
+	background-image: url(simpsons.png);
+	background-repeat: no-repeat;
+	background-position: center center;
+	color: transparent; /*#fae19c; /*#dd0;*/
 	font-size: 4.0em;
 	font-weight: bold;
-	text-shadow: /*-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, /* text outline */
-	              3px  3px 15px rgba(0, 0, 0, 0.2),
+	/*
+	text-shadow:  3px  3px 15px rgba(0, 0, 0, 0.2),
 	              3px -3px 15px rgba(0, 0, 0, 0.2),
 	             -3px  3px 15px rgba(0, 0, 0, 0.2),
 	             -3px -3px 15px rgba(0, 0, 0, 0.2);
+							 */
+	/*
 	padding-bottom: 10px;
 	padding-top: 10px;
-	border: solid 3px #ff0;
+	*/
+	border: none; /*solid 3px #ff0;*/
 	border-radius: 60px;
-	width: 640px;
+	/*width: 640px;*/
 	box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.4);
 }
 
